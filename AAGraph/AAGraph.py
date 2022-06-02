@@ -4,6 +4,7 @@
 """
 
 from AAModule import AAModule
+from AAModuleTree import AAModuleTree
 import networkx as nx
 
 # Create a graph with all modules and dependencies between them
@@ -17,7 +18,7 @@ def dependencies_graph(modules):
             G.add_edge(module_name, each)
     return G
 
-# Create a graph with directed dependencies
+# Create a graph with directed dependencies based on imports
 def dependencies_digraph(modules):
     G = nx.DiGraph()
     for module in modules:
@@ -28,6 +29,8 @@ def dependencies_digraph(modules):
             G.add_edge(module_name, each)
     return G
 
+# Create a graph of modules in the system with directed dependencies
+# Dependencies on outside packages are not shown
 def system_only_dependencies_digraph(modules):
     G = nx.DiGraph()
     for module in modules:
@@ -47,6 +50,50 @@ def system_only_dependencies_digraph(modules):
 #            else:
 #                print("Rejected: "+ each)
     return G
+
+def isolation_graph(modules, depth):
+    G = nx.DiGraph()
+    for module in modules:
+        module_name = module.full_name
+        trunc_module_name = AAModule.top_level_module(module_name, depth)
+        if trunc_module_name not in G.nodes:
+            G.add_node(trunc_module_name)
+    # for module in modules:
+    #     module_name = module.full_name
+    #     trunc_module_name = AAModule.top_level_module(module_name, depth)
+    #     for imported_module in module.imports:
+    #         trunc_imported_module_name = AAModule.top_level_module(imported_module, depth)
+    #         if G.has_node(trunc_imported_module_name):
+    #             print("((((" + module_name + "  -> " + imported_module + " (" + trunc_module_name + " -> " +trunc_imported_module_name + ")")
+    #             import_depth = AAModule.relative_module_level(trunc_imported_module_name, imported_module)
+    #             if G.has_edge(trunc_module_name, trunc_imported_module_name):
+    #                 abe = False
+                    
+
+def dependencies_digraph_from_roots(roots, external_module_roots = {}):
+    G = nx.DiGraph()
+    for module_description in AAModuleTree.traverse_modules(roots):
+        module_name = module_description.full_name
+        if module_name in G.nodes():
+            print("!!!!!!!!!!!!!!! dependencies_digraph_from_roots: Duplicate module name: " + module_name)
+        G.add_node(module_name)
+    for module_description in AAModuleTree.traverse_modules(external_module_roots):
+        module_name = module_description.full_name
+        if module_name in G.nodes():
+            print("!!!!!!!!!!!!!!! dependencies_digraph_from_roots: Duplicate external module name " + module_name)
+        G.add_node(module_name)
+    for module_description in AAModuleTree.traverse_modules(roots):
+#        for imported_module_description in module_description.imported_modules:
+#            if not imported_module_description:
+#                print("oops")
+        for imported_module_full_name in module_description.imports:
+#            if G.has_node(imported_module_description.full_name):  # Ignore imported modules not in the graph
+#                G.add_edge(module_description.full_name, imported_module_description.full_name)
+            if G.has_node(imported_module_full_name):  # Ignore imported modules not in the graph
+                G.add_edge(module_description.full_name, imported_module_full_name)
+    return G
+    
+        
 
 def dump_digraph(G):
     print(".................................................")

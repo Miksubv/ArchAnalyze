@@ -45,21 +45,24 @@ class RestApiExtractor(ast.NodeVisitor):
 class NodeExtractor(ast.NodeVisitor):
 
     def __init__(self):
-      self.imports = []
+      self.imports = set()
       self.rest_api_routes = []
 
     def visit_Import(self, import_node):
         # retrieve the name from the returned object
         # normally, there is just a single alias
         for alias in import_node.names:
-            self.imports.append(alias.name)
+            self.imports.add(alias.name)
         # delegate to the default visitor
         super(NodeExtractor, self).generic_visit(import_node)
         
     def visit_ImportFrom(self, import_from_node):
         
         if import_from_node.level == 0: # imports with level 1 import from current dir. import level 2 import from the parent dir. We ignore these
-            self.imports.append(str(import_from_node.module))
+            import_from_module_name = str(import_from_node.module)
+            for alias in import_from_node.names:
+                imported_module_name = import_from_module_name + "." + alias.name
+                self.imports.add(imported_module_name)
 #        else:
 #            print(ast.dump(import_from_node))
         # delegate to the default visitor

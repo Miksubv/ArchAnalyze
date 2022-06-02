@@ -28,6 +28,87 @@ assert (top_level_module("zeeguu_core.model.util", 2) == "zeeguu_core.model")
 def bottom_level_module(module_name, depth=1):
     components = module_name.split(".")
     return ".".join(components[-depth:])
+
+def module_contains_module(module_name1, module_name2):
+    if module_name1 == module_name2:
+        return False
+    components1 = module_name1.split(".")
+    module2_truncated_name = top_level_module(module_name2, len(components1))
+    return module_name1 == module2_truncated_name
+assert module_contains_module("zeeguu_core.model", "zeeguu_core.model.user")
+assert module_contains_module("zeeguu_core.model", "zeeguu_core.model.user.x")
+assert not module_contains_module("zeeguu_core_model", "zeeguu_core_model")
+assert not module_contains_module("zeeguu_core.model.user", "zeeguu_core.model")
+assert not module_contains_module("zeeguu_core.model", "zeeguu_core.model2.user")
+
+def any_module_contains_module(module_name_list, module_name):
+    for module_name_candidate in module_name_list:
+        if module_contains_module(module_name_candidate, module_name):
+            return True
+    return False
+assert any_module_contains_module(["zeeguu_core.model", "zeeguu_core.user"], "zeeguu_core.model.x")
+assert any_module_contains_module(["zeeguu_core.model", "zeeguu_core.user"], "zeeguu_core.user.x")
+assert any_module_contains_module(["zeeguu_core.model", "zeeguu_core.user"], "zeeguu_core.user.x.y")
+assert not any_module_contains_module(["zeeguu_core.model", "zeeguu_core.user"], "zeeguu_core.user")
+assert not any_module_contains_module(["zeeguu_core.model", "zeeguu_core.user"], "zeeguu_core")
+assert not any_module_contains_module(["zeeguu_core.model", "zeeguu_core.user"], "zeeguu.user.x")
+
+def module_is_direct_sub_module(parent_module_full_name, candidate_module_full_name):
+    if module_contains_module(parent_module_full_name, candidate_module_full_name):
+        if relative_module_level(parent_module_full_name, candidate_module_full_name) == 1:
+            return True
+    return False
+
+def module_level(full_module_name):
+    components = full_module_name.split(".")
+    return len(components)    
+
+def relative_module_level(module_name1, module_name2):
+    if module_name1 == module_name2:
+        return 0
+    if not module_contains_module(module_name1, module_name2):
+        return -1
+    return module_level(module_name2) - module_level(module_name1)
+assert relative_module_level("zeeguu_core", "zeeguu_core") == 0
+assert relative_module_level("zeeguu_core", "zeeguu_core.model") == 1
+assert relative_module_level("zeeguu_core", "zeeguu_core.model.user") == 2
+assert relative_module_level("zeeguu_core.model.user", "zeeguu_core") == -1
+assert relative_module_level("zeeguu_core.model.x", "zeeguu_core.model.y") == -1
+
+
+def module_belongs_to_zeeguu_api(full_module_name):
+    if module_contains_module("zeeguu", full_module_name):
+        return True
+    if module_contains_module("tools", full_module_name):
+        return True
+    if full_module_name in ["env_var_defs_default", "setup", "tools", "zeeguu", "zeeguu_api_dev"]:
+        return True
+    return False
+
+def is_significant_external_module(full_module_name):
+    significant_external_modules = ["apimux",
+                           "bs4",
+                           "elasticsearch",
+                           "feedparser",
+                           "feed_retrieval",
+                           "flask",
+#                           "flask_cors",
+#                           "flask_monitoringdashboard",
+                           "flask_sqlalchemy",
+                           "langdetect",
+                           "MySQLdb",
+                           "newspaper",
+                           "nltk",
+                           "python_translators",
+                           "requests",
+                           "sqlalchemy",
+                           "urllib",
+                           "wordstats"]
+    top_module_name = top_level_module(full_module_name)
+    return top_module_name in significant_external_modules
+
+def is_significant_external_top_level_module(full_module_name):
+    return module_level(full_module_name) == 1 and is_significant_external_module(full_module_name)
     
 
 # Get a list of all python modules in the system
@@ -84,6 +165,7 @@ class ModuleInfo:
         module_node = AAAST.get_ast_for_file(full_path)
         self.imports = AAAST.get_imports(module_node)
         self.rest_api_routes = AAAST.get_rest_api(module_node)
+        self.churn = 0 # not calculated yet
         
     def dump(self):
         print("Module: " + self.full_name + " [" + self.full_path + "] toplevel: " + self.toplevel_module)

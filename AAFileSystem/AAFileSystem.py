@@ -21,6 +21,9 @@ from git import Repo
 if not os.path.exists(CODE_ROOT_FOLDER):
   Repo.clone_from("https://github.com/zeeguu-ecosystem/Zeeguu-API", CODE_ROOT_FOLDER)
 
+def get_code_root_folder():
+    return CODE_ROOT_FOLDER
+
 # get a file path w/o having to always provide the /content/Zeeguu-Core/ prefix
 def file_path(file_name):
     return CODE_ROOT_FOLDER+file_name
