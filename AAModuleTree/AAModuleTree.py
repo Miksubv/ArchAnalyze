@@ -526,7 +526,6 @@ class ModuleDescription:
         if full_path:
             self.full_path = str(full_path)
             self.full_name = AAModule.module_name_from_file_path(self.full_path)
-            self.local_name = AAModule.bottom_level_module(self.full_name)
             module_node = AAAST.get_ast_for_file(full_path)
             self.imports = AAAST.get_imports(module_node)
         else:
@@ -536,7 +535,6 @@ class ModuleDescription:
             self.imports = set()
     def set_as_external(self, full_name):
         self.full_name = full_name
-        self.local_name = AAModule.bottom_level_module(self.full_name)
         
     def dump(self):
         print("Module: " + self.full_name + " [" + self.full_path + "] local_name: " + self.local_name)
