@@ -1,15 +1,88 @@
 # -*- coding: utf-8 -*-
 """
 @author: mlv
+
+Purpose:
+    Functions for parsing the syntax tree for python files.
 """
 
 # ast package can parse Python files
 import ast
 
-
 def get_ast_for_file(full_path):
+    '''
+    Get the ast for a python file.
+
+    Parameters
+    ----------
+    full_path : path
+        file path to the python file
+
+    Returns
+    -------
+    AST node with AST information for the python file.
+    '''
     return ast.parse(open(full_path).read())
 
+
+def get_imports(module_node):
+    '''
+    Get a list of imported modules based on the AST for a python file.
+    Imported modules are extracted from "Import xxx" and "From XXX import YYY" statements
+
+    Parameters
+    ----------
+    module_node : AST node
+        AST node for a python file.
+
+    Returns
+    -------
+    list of string
+        List of full module names for imported modules.
+
+    '''
+    extractor = NodeExtractor()
+    extractor.visit(module_node)
+    return extractor.imports    
+
+
+'''
+Visitor to extract imported modules
+'''
+class NodeExtractor(ast.NodeVisitor):
+
+    def __init__(self):
+      self.imports = set()
+      self.rest_api_routes = []
+
+    def visit_Import(self, import_node):
+        # retrieve the name from the returned object
+        # normally, there is just a single alias
+        for alias in import_node.names:
+            self.imports.add(alias.name)
+        # delegate to the default visitor
+        super(NodeExtractor, self).generic_visit(import_node)
+        
+    def visit_ImportFrom(self, import_from_node):
+        
+        if import_from_node.level == 0: # imports with level 1 import from current dir. import level 2 import from the parent dir. We ignore these
+            import_from_module_name = str(import_from_node.module)
+            for alias in import_from_node.names:
+                imported_module_name = import_from_module_name + "." + alias.name
+                self.imports.add(imported_module_name)
+#        else:
+#            print(ast.dump(import_from_node))
+        # delegate to the default visitor
+        super(NodeExtractor, self).generic_visit(import_from_node)
+
+
+
+
+'''
+    The remainder of this file is not used for the report.
+    It contains experiments that where ultimately not used.
+'''
+'''
 class RestApiExtractor(ast.NodeVisitor):
     def __init__(self):
         self.rest_api_routes = []
@@ -42,31 +115,6 @@ class RestApiExtractor(ast.NodeVisitor):
 #        print(api_ref)
         self.rest_api_routes.append([api_type, api_ref])
 
-class NodeExtractor(ast.NodeVisitor):
-
-    def __init__(self):
-      self.imports = set()
-      self.rest_api_routes = []
-
-    def visit_Import(self, import_node):
-        # retrieve the name from the returned object
-        # normally, there is just a single alias
-        for alias in import_node.names:
-            self.imports.add(alias.name)
-        # delegate to the default visitor
-        super(NodeExtractor, self).generic_visit(import_node)
-        
-    def visit_ImportFrom(self, import_from_node):
-        
-        if import_from_node.level == 0: # imports with level 1 import from current dir. import level 2 import from the parent dir. We ignore these
-            import_from_module_name = str(import_from_node.module)
-            for alias in import_from_node.names:
-                imported_module_name = import_from_module_name + "." + alias.name
-                self.imports.add(imported_module_name)
-#        else:
-#            print(ast.dump(import_from_node))
-        # delegate to the default visitor
-        super(NodeExtractor, self).generic_visit(import_from_node)
         
     def visit_FunctionDef(self, function_def_node):
         for decorator_node in function_def_node.decorator_list:
@@ -80,7 +128,4 @@ def get_rest_api(module_node):
     extractor.visit(module_node)
     return extractor.rest_api_routes
 
-def get_imports(module_node):
-    extractor = NodeExtractor()
-    extractor.visit(module_node)
-    return extractor.imports    
+'''
