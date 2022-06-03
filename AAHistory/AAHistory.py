@@ -1,8 +1,16 @@
 # -*- coding: utf-8 -*-
 """
 @author: mlv
+
+Purpose
+    Extract metrics from the git repository.
 """
 
+'''
+None of the code in this file was used in the report.
+It contains experiments that were ultimately not included in the report.
+'''
+'''
 from AAFileSystem import AAFileSystem
 from AAModule import AAModule
 from pydriller import Repository
@@ -125,5 +133,5 @@ def accumulate_churn(modules):
                     # next ancestor found. Add our churn to the ancestor
                     module2.churn += module.churn
                     break
-                
+'''                
 
