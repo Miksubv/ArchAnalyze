@@ -181,30 +181,30 @@ def create_sub_module_view(roots, external_module_roots, parent_module_full_name
     It contains experiments that where ultimately not used.
 '''
 '''
-# a function to draw a graph
-def draw_graph(G, size, **args):
-    plt.figure(figsize=size)
-    nx.draw(G, **args)
-    plt.show()
-def draw_graph_with_labels(G, figsize=(10,10), title=""):
-    plt.figure(figsize=figsize)
-    if title != "":
-        plt.title(title)
-    nx.draw(G, with_labels=True, node_color='#00d4e9')
-    plt.show()
+# # a function to draw a graph
+# def draw_graph(G, size, **args):
+#     plt.figure(figsize=size)
+#     nx.draw(G, **args)
+#     plt.show()
+# def draw_graph_with_labels(G, figsize=(10,10), title=""):
+#     plt.figure(figsize=figsize)
+#     if title != "":
+#         plt.title(title)
+#     nx.draw(G, with_labels=True, node_color='#00d4e9')
+#     plt.show()
 
-def scaled_weights(weight_fct, scale):
-    return lambda node : weight_fct(node) * scale
+# def scaled_weights(weight_fct, scale):
+#     return lambda node : weight_fct(node) * scale
 
-def create_weighted_submodule_view(DG, module_name, level, weights, figsize, title):
-    selected_nodes_DG = AAGraph.select_nodes_from_module(DG, module_name)
-    selected_toplevel_nodes_DG = AAGraph.abstracted_to_top_level(selected_nodes_DG, level)
-    draw_graph_with_weights(selected_toplevel_nodes_DG, weights, figsize, title)
+# def create_weighted_submodule_view(DG, module_name, level, weights, figsize, title):
+#     selected_nodes_DG = AAGraph.select_nodes_from_module(DG, module_name)
+#     selected_toplevel_nodes_DG = AAGraph.abstracted_to_top_level(selected_nodes_DG, level)
+#     draw_graph_with_weights(selected_toplevel_nodes_DG, weights, figsize, title)
 
-def create_bounded_weighted_submodule_view(DG, module_name, level, weights, weight_constrictor, figsize, title):
-    selected_nodes_DG = AAGraph.select_nodes_from_module(DG, module_name)
-    selected_toplevel_nodes_DG = AAGraph.abstracted_to_top_level(selected_nodes_DG, level)
-    bounded_nodes_DG = AAGraph.keep_nodes(selected_toplevel_nodes_DG, lambda node : weight_constrictor(weights(node)))
-    draw_graph_with_weights(bounded_nodes_DG, weights, figsize, title)
+# def create_bounded_weighted_submodule_view(DG, module_name, level, weights, weight_constrictor, figsize, title):
+#     selected_nodes_DG = AAGraph.select_nodes_from_module(DG, module_name)
+#     selected_toplevel_nodes_DG = AAGraph.abstracted_to_top_level(selected_nodes_DG, level)
+#     bounded_nodes_DG = AAGraph.keep_nodes(selected_toplevel_nodes_DG, lambda node : weight_constrictor(weights(node)))
+#     draw_graph_with_weights(bounded_nodes_DG, weights, figsize, title)
 '''
     

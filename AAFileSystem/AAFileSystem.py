@@ -133,21 +133,25 @@ def module_LOC(module_name):
 
     return size
 
+
 '''
-def count_file_types():
-    file_type_count = dict()    
-    for path in Path(CODE_ROOT_FOLDER).rglob("*.*"):
-        filename, file_extension = os.path.splitext(path)
-        if file_extension in file_type_count:
-            file_type_count[file_extension] += 1
-        else:
-            file_type_count[file_extension] = 1
-    return file_type_count
+    The remainder of this file is not used for the report.
+    It contains experiments that where ultimately not used.
+'''
+'''
+# def count_file_types():
+#     file_type_count = dict()    
+#     for path in Path(CODE_ROOT_FOLDER).rglob("*.*"):
+#         filename, file_extension = os.path.splitext(path)
+#         if file_extension in file_type_count:
+#             file_type_count[file_extension] += 1
+#         else:
+#             file_type_count[file_extension] = 1
+#     return file_type_count
 
-def dump_file_type_count():
-    print("Number of files with different file extensions")
-    file_type_count = sorted(count_file_types().items(), key=lambda x: x[1], reverse=True)
-    for item in file_type_count:
-        print(item[0] + ": " + str(item[1]))
-
+# def dump_file_type_count():
+#     print("Number of files with different file extensions")
+#     file_type_count = sorted(count_file_types().items(), key=lambda x: x[1], reverse=True)
+#     for item in file_type_count:
+#         print(item[0] + ": " + str(item[1]))
 '''

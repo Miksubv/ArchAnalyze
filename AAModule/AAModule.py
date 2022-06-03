@@ -258,66 +258,66 @@ def is_significant_external_top_level_module(full_module_name):
     It contains experiments that where ultimately not used.
 '''
 '''
-from AAAST import AAAST
+# from AAAST import AAAST
 
-def bottom_level_module(module_name, depth=1):
-    components = module_name.split(".")
-    return ".".join(components[-depth:])
+# def bottom_level_module(module_name, depth=1):
+#     components = module_name.split(".")
+#     return ".".join(components[-depth:])
 
-# Get a list of all python modules in the system
-def get_all_modules():
-    modules = []
-    for file in AAFileSystem.all_file_paths(".py"):
-        modules.append(ModuleInfo(file))
-    return modules
+# # Get a list of all python modules in the system
+# def get_all_modules():
+#     modules = []
+#     for file in AAFileSystem.all_file_paths(".py"):
+#         modules.append(ModuleInfo(file))
+#     return modules
 
-# Print the module info for all the given modules
-def dump_modules(modules):
-    for module in modules:
-        module.dump()
-# Print the full_name for all the given modules        
-def dump_module_names(modules):
-    for module in modules:
-        print(module.full_name)
+# # Print the module info for all the given modules
+# def dump_modules(modules):
+#     for module in modules:
+#         module.dump()
+# # Print the full_name for all the given modules        
+# def dump_module_names(modules):
+#     for module in modules:
+#         print(module.full_name)
 
-def lookup_module(modules, local_name):
-    return next(module for module in modules if module.local_name == local_name)
+# def lookup_module(modules, local_name):
+#     return next(module for module in modules if module.local_name == local_name)
 
-def dump_raw_rest_api_data(modules):
-    for module in modules:
-        if module.rest_api_routes:
-            print(module.full_name)
-            for rest_api_route in module.rest_api_routes:
-                print(rest_api_route)
+# def dump_raw_rest_api_data(modules):
+#     for module in modules:
+#         if module.rest_api_routes:
+#             print(module.full_name)
+#             for rest_api_route in module.rest_api_routes:
+#                 print(rest_api_route)
 
-def dump_rest_routes(modules):
-    post_routes = []
-    get_routes = []
-    for module in modules:
-        for rest_api_route in module.rest_api_routes:
-            if rest_api_route[0] == "POST":
-                post_routes.append(rest_api_route[1])
-            if rest_api_route[0] == "GET":
-                get_routes.append(rest_api_route[1])
-    print("Rest API GET:")
-    for route in get_routes:
-        print(route)
-    print("Rest API POST:")
-    for route in post_routes:
-        print(route)
+# def dump_rest_routes(modules):
+#     post_routes = []
+#     get_routes = []
+#     for module in modules:
+#         for rest_api_route in module.rest_api_routes:
+#             if rest_api_route[0] == "POST":
+#                 post_routes.append(rest_api_route[1])
+#             if rest_api_route[0] == "GET":
+#                 get_routes.append(rest_api_route[1])
+#     print("Rest API GET:")
+#     for route in get_routes:
+#         print(route)
+#     print("Rest API POST:")
+#     for route in post_routes:
+#         print(route)
 
-# Class for collection metadata for a module in the system
-class ModuleInfo:
-    def __init__(self, full_path):
-        self.full_path = str(full_path)
-        self.full_name = module_name_from_file_path(self.full_path)
-        self.toplevel_module = top_level_module(self.full_name)
-        self.local_name = bottom_level_module(self.full_name)
-        module_node = AAAST.get_ast_for_file(full_path)
-        self.imports = AAAST.get_imports(module_node)
-        self.rest_api_routes = AAAST.get_rest_api(module_node)
-        self.churn = 0 # not calculated yet
+# # Class for collection metadata for a module in the system
+# class ModuleInfo:
+#     def __init__(self, full_path):
+#         self.full_path = str(full_path)
+#         self.full_name = module_name_from_file_path(self.full_path)
+#         self.toplevel_module = top_level_module(self.full_name)
+#         self.local_name = bottom_level_module(self.full_name)
+#         module_node = AAAST.get_ast_for_file(full_path)
+#         self.imports = AAAST.get_imports(module_node)
+#         self.rest_api_routes = AAAST.get_rest_api(module_node)
+#         self.churn = 0 # not calculated yet
         
-    def dump(self):
-        print("Module: " + self.full_name + " [" + self.full_path + "] toplevel: " + self.toplevel_module)
+#     def dump(self):
+#         print("Module: " + self.full_name + " [" + self.full_path + "] toplevel: " + self.toplevel_module)
 '''

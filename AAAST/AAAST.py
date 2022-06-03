@@ -83,49 +83,48 @@ class NodeExtractor(ast.NodeVisitor):
     It contains experiments that where ultimately not used.
 '''
 '''
-class RestApiExtractor(ast.NodeVisitor):
-    def __init__(self):
-        self.rest_api_routes = []
-    def visit_Call(self, call_node):
-        # Check if this has an attribute with a value of "api" and a keywords list including "GET" or "POST"
-#        print(ast.dump(call_node))
-        func = call_node.func
-        if type(func) is ast.Attribute:
-            value = func.value
-            if type(value) is ast.Name:
-                value_id = value.id
-                if(value_id == "api"):
-                    for keyword in call_node.keywords:
-                        value_list = keyword.value
-                        for element in value_list.elts:
-                            element_value = element.value
-                            if(element_value == "GET" or element_value == "POST"):
-                                self.register_rest_api(call_node, element_value)
+# class RestApiExtractor(ast.NodeVisitor):
+#     def __init__(self):
+#         self.rest_api_routes = []
+#     def visit_Call(self, call_node):
+#         # Check if this has an attribute with a value of "api" and a keywords list including "GET" or "POST"
+# #        print(ast.dump(call_node))
+#         func = call_node.func
+#         if type(func) is ast.Attribute:
+#             value = func.value
+#             if type(value) is ast.Name:
+#                 value_id = value.id
+#                 if(value_id == "api"):
+#                     for keyword in call_node.keywords:
+#                         value_list = keyword.value
+#                         for element in value_list.elts:
+#                             element_value = element.value
+#                             if(element_value == "GET" or element_value == "POST"):
+#                                 self.register_rest_api(call_node, element_value)
                             
-#            else:
-#                print("Value is not Name")
-#        else:
-#            print("Func is not Attribute")
-        super(RestApiExtractor, self).generic_visit(call_node)
-    def register_rest_api(self, call_node, api_type):
-        api_ref = ""
-        for arg in call_node.args:
-            if type(arg) == ast.Constant:
-                api_ref = arg.value
-#        print(api_ref)
-        self.rest_api_routes.append([api_type, api_ref])
+# #            else:
+# #                print("Value is not Name")
+# #        else:
+# #            print("Func is not Attribute")
+#         super(RestApiExtractor, self).generic_visit(call_node)
+#     def register_rest_api(self, call_node, api_type):
+#         api_ref = ""
+#         for arg in call_node.args:
+#             if type(arg) == ast.Constant:
+#                 api_ref = arg.value
+# #        print(api_ref)
+#         self.rest_api_routes.append([api_type, api_ref])
 
         
-    def visit_FunctionDef(self, function_def_node):
-        for decorator_node in function_def_node.decorator_list:
-            visitor = RestApiExtractor()
-            visitor.visit(decorator_node)
-            for api_route in visitor.rest_api_routes:
-                self.rest_api_routes.append([api_route[0] , api_route[1], function_def_node.name])
+#     def visit_FunctionDef(self, function_def_node):
+#         for decorator_node in function_def_node.decorator_list:
+#             visitor = RestApiExtractor()
+#             visitor.visit(decorator_node)
+#             for api_route in visitor.rest_api_routes:
+#                 self.rest_api_routes.append([api_route[0] , api_route[1], function_def_node.name])
 
-def get_rest_api(module_node):
-    extractor = NodeExtractor()
-    extractor.visit(module_node)
-    return extractor.rest_api_routes
-
+# def get_rest_api(module_node):
+#     extractor = NodeExtractor()
+#     extractor.visit(module_node)
+#     return extractor.rest_api_routes
 '''
